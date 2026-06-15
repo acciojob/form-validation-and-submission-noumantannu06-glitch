@@ -12,8 +12,38 @@ const termsCheckbox = document.getElementById('termsCheckbox');
 const submitBtn = document.getElementById('submitBtn');
 const successMessage = document.getElementById('successMessage');
 
-// Validation functions
+// Validation functions - return true/false without showing errors on init
 function validateName() {
+  const name = nameInput.value.trim();
+  return name.length > 0;
+}
+
+function validateEmail() {
+  const email = emailInput.value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return email.length > 0 && emailRegex.test(email);
+}
+
+function validatePassword() {
+  const password = passwordInput.value;
+  return password.length >= 6;
+}
+
+function validateGender() {
+  return genderSelect.value !== '';
+}
+
+function validatePriority() {
+  return prioritySelect.value !== '';
+}
+
+function validateTask() {
+  const task = taskInput.value.trim();
+  return task.length > 0;
+}
+
+// Show error with validation
+function validateNameWithError() {
   const name = nameInput.value.trim();
   if (name.length === 0) {
     showError('nameError', 'Name is required');
@@ -25,7 +55,7 @@ function validateName() {
   return true;
 }
 
-function validateEmail() {
+function validateEmailWithError() {
   const email = emailInput.value.trim();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   
@@ -44,7 +74,7 @@ function validateEmail() {
   return true;
 }
 
-function validatePassword() {
+function validatePasswordWithError() {
   const password = passwordInput.value;
   
   if (password.length === 0) {
@@ -62,7 +92,7 @@ function validatePassword() {
   return true;
 }
 
-function validateGender() {
+function validateGenderWithError() {
   if (genderSelect.value === '') {
     showError('genderError', 'Please select a gender');
     genderSelect.classList.add('error');
@@ -73,7 +103,7 @@ function validateGender() {
   return true;
 }
 
-function validatePriority() {
+function validatePriorityWithError() {
   if (prioritySelect.value === '') {
     showError('priorityError', 'Please select a priority');
     prioritySelect.classList.add('error');
@@ -84,7 +114,7 @@ function validatePriority() {
   return true;
 }
 
-function validateTask() {
+function validateTaskWithError() {
   const task = taskInput.value.trim();
   if (task.length === 0) {
     showError('taskError', 'Task is required');
@@ -108,21 +138,19 @@ function hideError(errorId) {
   errorElement.classList.remove('show');
 }
 
-// Check if all fields are valid
-function validateAllFields() {
-  const nameValid = validateName();
-  const emailValid = validateEmail();
-  const passwordValid = validatePassword();
-  const genderValid = validateGender();
-  const priorityValid = validatePriority();
-  const taskValid = validateTask();
-  
-  return nameValid && emailValid && passwordValid && genderValid && priorityValid && taskValid;
+// Check if all fields are valid (without showing errors)
+function isAllFieldsValid() {
+  return validateName() && 
+         validateEmail() && 
+         validatePassword() && 
+         validateGender() && 
+         validatePriority() && 
+         validateTask();
 }
 
-// Check if form can be submitted
+// Check if form can be submitted (button enabling logic)
 function canSubmitForm() {
-  const allFieldsValid = validateAllFields();
+  const allFieldsValid = isAllFieldsValid();
   const termsAccepted = termsCheckbox.checked;
   
   // Enable/disable submit button based on validation
@@ -131,19 +159,37 @@ function canSubmitForm() {
   return allFieldsValid && termsAccepted;
 }
 
-// Event Listeners for real-time validation
+// Validate with error display (on submit or blur)
+function validateAllFieldsWithError() {
+  return validateNameWithError() && 
+         validateEmailWithError() && 
+         validatePasswordWithError() && 
+         validateGenderWithError() && 
+         validatePriorityWithError() && 
+         validateTaskWithError();
+}
+
+// Event Listeners for real-time validation (enables button on input)
 nameInput.addEventListener('input', canSubmitForm);
 emailInput.addEventListener('input', canSubmitForm);
 passwordInput.addEventListener('input', canSubmitForm);
 genderSelect.addEventListener('change', canSubmitForm);
 prioritySelect.addEventListener('change', canSubmitForm);
 taskInput.addEventListener('input', canSubmitForm);
-termsCheckbox.addEventListener('change', canSubmitForm);
+
+// Checkbox listener - enables button when checked (if fields valid)
+termsCheckbox.addEventListener('change', function() {
+  canSubmitForm();
+});
 
 // Form submission handler
 form.addEventListener('submit', function(event) {
+  // Validate with error display on submit
+  const allFieldsValid = validateAllFieldsWithError();
+  const termsAccepted = termsCheckbox.checked;
+  
   // Prevent default submission if not valid
-  if (!canSubmitForm()) {
+  if (!allFieldsValid || !termsAccepted) {
     event.preventDefault();
     return false;
   }
