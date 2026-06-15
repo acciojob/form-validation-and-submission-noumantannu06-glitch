@@ -1,0 +1,4 @@
+{
+  "testRepo": "form-validation-and-submission-solution",
+  "pathToFile": "cypress/integration/tests/test.spec.js"
+}
