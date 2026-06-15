@@ -4,6 +4,7 @@
 const form = document.getElementById('registrationForm');
 const nameInput = document.getElementById('name');
 const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
 const genderSelect = document.getElementById('gender');
 const prioritySelect = document.getElementById('priority');
 const taskInput = document.getElementById('task');
@@ -40,6 +41,24 @@ function validateEmail() {
   }
   hideError('emailError');
   emailInput.classList.remove('error');
+  return true;
+}
+
+function validatePassword() {
+  const password = passwordInput.value;
+  
+  if (password.length === 0) {
+    showError('passwordError', 'Password is required');
+    passwordInput.classList.add('error');
+    return false;
+  }
+  if (password.length < 6) {
+    showError('passwordError', 'Password must be at least 6 characters');
+    passwordInput.classList.add('error');
+    return false;
+  }
+  hideError('passwordError');
+  passwordInput.classList.remove('error');
   return true;
 }
 
@@ -93,11 +112,12 @@ function hideError(errorId) {
 function validateAllFields() {
   const nameValid = validateName();
   const emailValid = validateEmail();
+  const passwordValid = validatePassword();
   const genderValid = validateGender();
   const priorityValid = validatePriority();
   const taskValid = validateTask();
   
-  return nameValid && emailValid && genderValid && priorityValid && taskValid;
+  return nameValid && emailValid && passwordValid && genderValid && priorityValid && taskValid;
 }
 
 // Check if form can be submitted
@@ -114,6 +134,7 @@ function canSubmitForm() {
 // Event Listeners for real-time validation
 nameInput.addEventListener('input', canSubmitForm);
 emailInput.addEventListener('input', canSubmitForm);
+passwordInput.addEventListener('input', canSubmitForm);
 genderSelect.addEventListener('change', canSubmitForm);
 prioritySelect.addEventListener('change', canSubmitForm);
 taskInput.addEventListener('input', canSubmitForm);
@@ -135,6 +156,7 @@ form.addEventListener('submit', function(event) {
   const data = {
     name: formData.get('name'),
     email: formData.get('email'),
+    password: formData.get('password'),
     gender: formData.get('gender'),
     priority: formData.get('priority'),
     task: formData.get('task'),

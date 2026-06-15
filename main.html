@@ -9,7 +9,7 @@
 <body>
 	<!-- the entire body must be written by student -->
 	<div class="form-container">
-    <h1>To-Do App</h1>
+    <h1>Example To-Do App</h1>
 
     <form id="registrationForm" action="submit-form.php" method="POST">
       <!-- Name Field -->
@@ -38,7 +38,20 @@
         <div class="error-message" id="emailError">Valid email is required</div>
       </div>
 
-      <!-- Gender Select Field (REQUIRED for Cypress Test) -->
+      <!-- Password Field (REQUIRED for Cypress Test) -->
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          placeholder="Enter your password"
+          required
+        >
+        <div class="error-message" id="passwordError">Password is required (min 6 characters)</div>
+      </div>
+
+      <!-- Gender Select Field -->
       <div class="form-group">
         <label for="gender">Gender:</label>
         <select 
@@ -104,6 +117,8 @@
       </div>
     </form>
   </div>
+
+  
 
     <script type="text/javascript" src="./script.js">
 </script>
