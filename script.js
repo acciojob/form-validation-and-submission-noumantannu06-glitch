@@ -1,4 +1,3 @@
-javascript
 const form = document.getElementById("registrationForm");
 
 const nameInput = document.getElementById("name");
@@ -11,8 +10,33 @@ const taskInput = document.getElementById("task");
 const checkbox = document.getElementById("termsCheckbox");
 const submitBtn = document.getElementById("submitBtn");
 
-// button disabled initially
 submitBtn.disabled = true;
+
+checkbox.addEventListener("change", () => {
+submitBtn.disabled = !checkbox.checked;
+});
+
+form.addEventListener("submit", function (event) {
+
+
+let valid = true;
+
+if (nameInput.value.trim() === "") valid = false;
+if (emailInput.value.trim() === "") valid = false;
+if (passwordInput.value.trim() === "") valid = false;
+if (genderInput.value === "") valid = false;
+if (priorityInput.value === "") valid = false;
+if (taskInput.value.trim() === "") valid = false;
+
+if (!checkbox.checked) valid = false;
+
+if (!valid) {
+    event.preventDefault();
+}
+
+
+});
+
 
 // enable button when checkbox checked
 checkbox.addEventListener("change", function () {
