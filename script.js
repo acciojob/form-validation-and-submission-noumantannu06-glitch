@@ -1,12 +1,12 @@
-//your JS code here. If required.
 // Form Validation and Submission
 
 // Get form elements
 const form = document.getElementById('registrationForm');
 const nameInput = document.getElementById('name');
 const emailInput = document.getElementById('email');
-const phoneInput = document.getElementById('phone');
-const passwordInput = document.getElementById('password');
+const genderSelect = document.getElementById('gender');
+const prioritySelect = document.getElementById('priority');
+const taskInput = document.getElementById('task');
 const termsCheckbox = document.getElementById('termsCheckbox');
 const submitBtn = document.getElementById('submitBtn');
 const successMessage = document.getElementById('successMessage');
@@ -16,13 +16,11 @@ function validateName() {
   const name = nameInput.value.trim();
   if (name.length === 0) {
     showError('nameError', 'Name is required');
-    return false;
-  }
-  if (name.length < 2) {
-    showError('nameError', 'Name must be at least 2 characters');
+    nameInput.classList.add('error');
     return false;
   }
   hideError('nameError');
+  nameInput.classList.remove('error');
   return true;
 }
 
@@ -32,44 +30,50 @@ function validateEmail() {
   
   if (email.length === 0) {
     showError('emailError', 'Email is required');
+    emailInput.classList.add('error');
     return false;
   }
   if (!emailRegex.test(email)) {
-    showError('emailError', 'Please enter a valid email address');
+    showError('emailError', 'Please enter a valid email');
+    emailInput.classList.add('error');
     return false;
   }
   hideError('emailError');
+  emailInput.classList.remove('error');
   return true;
 }
 
-function validatePhone() {
-  const phone = phoneInput.value.trim();
-  const phoneRegex = /^[\d\s\-+]{10,}$/;
-  
-  if (phone.length === 0) {
-    showError('phoneError', 'Phone number is required');
+function validateGender() {
+  if (genderSelect.value === '') {
+    showError('genderError', 'Please select a gender');
+    genderSelect.classList.add('error');
     return false;
   }
-  if (!phoneRegex.test(phone)) {
-    showError('phoneError', 'Please enter a valid phone number');
-    return false;
-  }
-  hideError('phoneError');
+  hideError('genderError');
+  genderSelect.classList.remove('error');
   return true;
 }
 
-function validatePassword() {
-  const password = passwordInput.value;
-  
-  if (password.length === 0) {
-    showError('passwordError', 'Password is required');
+function validatePriority() {
+  if (prioritySelect.value === '') {
+    showError('priorityError', 'Please select a priority');
+    prioritySelect.classList.add('error');
     return false;
   }
-  if (password.length < 6) {
-    showError('passwordError', 'Password must be at least 6 characters');
+  hideError('priorityError');
+  prioritySelect.classList.remove('error');
+  return true;
+}
+
+function validateTask() {
+  const task = taskInput.value.trim();
+  if (task.length === 0) {
+    showError('taskError', 'Task is required');
+    taskInput.classList.add('error');
     return false;
   }
-  hideError('passwordError');
+  hideError('taskError');
+  taskInput.classList.remove('error');
   return true;
 }
 
@@ -78,29 +82,22 @@ function showError(errorId, message) {
   const errorElement = document.getElementById(errorId);
   errorElement.textContent = message;
   errorElement.classList.add('show');
-  
-  // Add error class to input
-  const inputId = errorId.replace('Error', '');
-  document.getElementById(inputId).classList.add('error');
 }
 
 function hideError(errorId) {
   const errorElement = document.getElementById(errorId);
   errorElement.classList.remove('show');
-  
-  // Remove error class from input
-  const inputId = errorId.replace('Error', '');
-  document.getElementById(inputId).classList.remove('error');
 }
 
 // Check if all fields are valid
 function validateAllFields() {
   const nameValid = validateName();
   const emailValid = validateEmail();
-  const phoneValid = validatePhone();
-  const passwordValid = validatePassword();
+  const genderValid = validateGender();
+  const priorityValid = validatePriority();
+  const taskValid = validateTask();
   
-  return nameValid && emailValid && phoneValid && passwordValid;
+  return nameValid && emailValid && genderValid && priorityValid && taskValid;
 }
 
 // Check if form can be submitted
@@ -117,8 +114,9 @@ function canSubmitForm() {
 // Event Listeners for real-time validation
 nameInput.addEventListener('input', canSubmitForm);
 emailInput.addEventListener('input', canSubmitForm);
-phoneInput.addEventListener('input', canSubmitForm);
-passwordInput.addEventListener('input', canSubmitForm);
+genderSelect.addEventListener('change', canSubmitForm);
+prioritySelect.addEventListener('change', canSubmitForm);
+taskInput.addEventListener('input', canSubmitForm);
 termsCheckbox.addEventListener('change', canSubmitForm);
 
 // Form submission handler
@@ -129,7 +127,7 @@ form.addEventListener('submit', function(event) {
     return false;
   }
 
-  // Prevent default submission for demo (remove this in production)
+  // Prevent default for demo (use form.submit() in production)
   event.preventDefault();
   
   // Collect form data
@@ -137,13 +135,13 @@ form.addEventListener('submit', function(event) {
   const data = {
     name: formData.get('name'),
     email: formData.get('email'),
-    phone: formData.get('phone'),
-    password: formData.get('password'),
+    gender: formData.get('gender'),
+    priority: formData.get('priority'),
+    task: formData.get('task'),
     terms: formData.get('terms') === 'on'
   };
 
-  // Simulate POST request to submit-form.php
-  // In production, use: form.submit();
+  // Log form data
   console.log('Form Data:', data);
   
   // Show success message
@@ -156,7 +154,7 @@ form.addEventListener('submit', function(event) {
     submitBtn.disabled = true;
   }, 2000);
   
-  // Uncomment below for actual submission:
+  // Uncomment for actual submission:
   // form.submit();
 });
 
