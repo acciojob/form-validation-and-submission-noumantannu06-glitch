@@ -12,118 +12,90 @@ const termsCheckbox = document.getElementById('termsCheckbox');
 const submitBtn = document.getElementById('submitBtn');
 const successMessage = document.getElementById('successMessage');
 
-// Validation functions - return true/false without showing errors on init
-function validateName() {
-  const name = nameInput.value.trim();
-  return name.length > 0;
+// Simple validation - check if field has value
+function isFieldValid(input) {
+  return input.value.trim().length > 0;
 }
 
-function validateEmail() {
-  const email = emailInput.value.trim();
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return email.length > 0 && emailRegex.test(email);
+function isSelectValid(select) {
+  return select.value !== '';
 }
 
-function validatePassword() {
-  const password = passwordInput.value;
-  return password.length >= 6;
+function isPasswordValid(password) {
+  return password.value.length >= 6;
 }
 
-function validateGender() {
-  return genderSelect.value !== '';
+// Check if all required fields are filled
+function areAllFieldsFilled() {
+  return isFieldValid(nameInput) &&
+         isFieldValid(emailInput) &&
+         isPasswordValid(passwordInput) &&
+         isSelectValid(genderSelect) &&
+         isSelectValid(prioritySelect) &&
+         isFieldValid(taskInput);
 }
 
-function validatePriority() {
-  return prioritySelect.value !== '';
+// Enable/Disable submit button
+function updateSubmitButton() {
+  const allFieldsFilled = areAllFieldsFilled();
+  const termsChecked = termsCheckbox.checked;
+  
+  // Button enables when all fields filled AND checkbox checked
+  submitBtn.disabled = !(allFieldsFilled && termsChecked);
 }
 
-function validateTask() {
-  const task = taskInput.value.trim();
-  return task.length > 0;
-}
-
-// Show error with validation
-function validateNameWithError() {
-  const name = nameInput.value.trim();
-  if (name.length === 0) {
+// Show errors for invalid fields
+function showErrors() {
+  if (!isFieldValid(nameInput)) {
     showError('nameError', 'Name is required');
     nameInput.classList.add('error');
-    return false;
+  } else {
+    hideError('nameError');
+    nameInput.classList.remove('error');
   }
-  hideError('nameError');
-  nameInput.classList.remove('error');
-  return true;
-}
-
-function validateEmailWithError() {
-  const email = emailInput.value.trim();
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   
-  if (email.length === 0) {
+  if (!isFieldValid(emailInput)) {
     showError('emailError', 'Email is required');
     emailInput.classList.add('error');
-    return false;
-  }
-  if (!emailRegex.test(email)) {
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
     showError('emailError', 'Please enter a valid email');
     emailInput.classList.add('error');
-    return false;
+  } else {
+    hideError('emailError');
+    emailInput.classList.remove('error');
   }
-  hideError('emailError');
-  emailInput.classList.remove('error');
-  return true;
-}
-
-function validatePasswordWithError() {
-  const password = passwordInput.value;
   
-  if (password.length === 0) {
-    showError('passwordError', 'Password is required');
-    passwordInput.classList.add('error');
-    return false;
-  }
-  if (password.length < 6) {
+  if (!isPasswordValid(passwordInput)) {
     showError('passwordError', 'Password must be at least 6 characters');
     passwordInput.classList.add('error');
-    return false;
+  } else {
+    hideError('passwordError');
+    passwordInput.classList.remove('error');
   }
-  hideError('passwordError');
-  passwordInput.classList.remove('error');
-  return true;
-}
-
-function validateGenderWithError() {
-  if (genderSelect.value === '') {
+  
+  if (!isSelectValid(genderSelect)) {
     showError('genderError', 'Please select a gender');
     genderSelect.classList.add('error');
-    return false;
+  } else {
+    hideError('genderError');
+    genderSelect.classList.remove('error');
   }
-  hideError('genderError');
-  genderSelect.classList.remove('error');
-  return true;
-}
-
-function validatePriorityWithError() {
-  if (prioritySelect.value === '') {
+  
+  if (!isSelectValid(prioritySelect)) {
     showError('priorityError', 'Please select a priority');
     prioritySelect.classList.add('error');
-    return false;
+  } else {
+    hideError('priorityError');
+    prioritySelect.classList.remove('error');
   }
-  hideError('priorityError');
-  prioritySelect.classList.remove('error');
-  return true;
-}
-
-function validateTaskWithError() {
-  const task = taskInput.value.trim();
-  if (task.length === 0) {
+  
+  if (!isFieldValid(taskInput)) {
     showError('taskError', 'Task is required');
     taskInput.classList.add('error');
-    return false;
+  } else {
+    hideError('taskError');
+    taskInput.classList.remove('error');
   }
-  hideError('taskError');
-  taskInput.classList.remove('error');
-  return true;
 }
 
 // Show/Hide error messages
@@ -138,63 +110,29 @@ function hideError(errorId) {
   errorElement.classList.remove('show');
 }
 
-// Check if all fields are valid (without showing errors)
-function isAllFieldsValid() {
-  return validateName() && 
-         validateEmail() && 
-         validatePassword() && 
-         validateGender() && 
-         validatePriority() && 
-         validateTask();
-}
+// Event Listeners - update button on every input
+nameInput.addEventListener('input', updateSubmitButton);
+emailInput.addEventListener('input', updateSubmitButton);
+passwordInput.addEventListener('input', updateSubmitButton);
+genderSelect.addEventListener('change', updateSubmitButton);
+prioritySelect.addEventListener('change', updateSubmitButton);
+taskInput.addEventListener('input', updateSubmitButton);
 
-// Check if form can be submitted (button enabling logic)
-function canSubmitForm() {
-  const allFieldsValid = isAllFieldsValid();
-  const termsAccepted = termsCheckbox.checked;
-  
-  // Enable/disable submit button based on validation
-  submitBtn.disabled = !(allFieldsValid && termsAccepted);
-  
-  return allFieldsValid && termsAccepted;
-}
-
-// Validate with error display (on submit or blur)
-function validateAllFieldsWithError() {
-  return validateNameWithError() && 
-         validateEmailWithError() && 
-         validatePasswordWithError() && 
-         validateGenderWithError() && 
-         validatePriorityWithError() && 
-         validateTaskWithError();
-}
-
-// Event Listeners for real-time validation (enables button on input)
-nameInput.addEventListener('input', canSubmitForm);
-emailInput.addEventListener('input', canSubmitForm);
-passwordInput.addEventListener('input', canSubmitForm);
-genderSelect.addEventListener('change', canSubmitForm);
-prioritySelect.addEventListener('change', canSubmitForm);
-taskInput.addEventListener('input', canSubmitForm);
-
-// Checkbox listener - enables button when checked (if fields valid)
+// Checkbox listener - THIS IS THE KEY FIX
 termsCheckbox.addEventListener('change', function() {
-  canSubmitForm();
+  updateSubmitButton();
 });
 
 // Form submission handler
 form.addEventListener('submit', function(event) {
-  // Validate with error display on submit
-  const allFieldsValid = validateAllFieldsWithError();
-  const termsAccepted = termsCheckbox.checked;
-  
-  // Prevent default submission if not valid
-  if (!allFieldsValid || !termsAccepted) {
+  // Show errors if not valid
+  if (!areAllFieldsFilled() || !termsCheckbox.checked) {
+    showErrors();
     event.preventDefault();
     return false;
   }
 
-  // Prevent default for demo (use form.submit() in production)
+  // Prevent default for demo
   event.preventDefault();
   
   // Collect form data
@@ -210,7 +148,7 @@ form.addEventListener('submit', function(event) {
   };
 
   // Log form data
-  console.log('Form Data:', data);
+  console.log('Form submitted:', data);
   
   // Show success message
   successMessage.classList.add('show');
@@ -219,12 +157,12 @@ form.addEventListener('submit', function(event) {
   setTimeout(() => {
     form.reset();
     successMessage.classList.remove('show');
-    submitBtn.disabled = true;
+    updateSubmitButton();
   }, 2000);
   
-  // Uncomment for actual submission:
+  // Uncomment for actual POST submission:
   // form.submit();
 });
 
-// Initial validation on page load
-canSubmitForm();
+// Initialize button state on page load
+updateSubmitButton();
